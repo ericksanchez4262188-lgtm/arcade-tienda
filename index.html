@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#151918">
+  <title>Arcade — Descubre tu próxima partida</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="ARCADE.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="Arcade, inicio"><span class="brand-mark">A</span> ARCADE</a>
+    <nav class="nav-links" aria-label="Navegación principal">
+      <a class="nav-link active" href="#catalogo">Tienda</a>
+      <a class="nav-link" href="#catalogo" data-nav-filter="Tendencia">Tendencias</a>
+      <a class="nav-link" href="#genreTabs">Géneros</a>
+    </nav>
+    <div class="top-actions">
+      <button class="icon-button" id="headerSearch" aria-label="Ir a búsqueda" title="Buscar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button>
+      <button class="icon-button" id="openCart" aria-label="Abrir carrito" title="Carrito"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg><span class="cart-count" id="cartCount">0</span></button>
+      <span class="profile" title="Tu perfil">M</span>
+    </div>
+  </header>
+  <main id="inicio">
+    <section class="hero" aria-label="Grand Theft Auto V, juego destacado">
+      <div class="hero-gallery" aria-label="Galería de imágenes de Grand Theft Auto V">
+        <div class="hero-image-carousel" id="heroImageCarousel" aria-hidden="true">
+          <img class="active" src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_32aa18ab3175e3002217862dd5917646d298ab6b.600x338.jpg?t=1765387725" alt="">
+          <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_2744f112fa060320d191a50e8b3a92441a648a56.600x338.jpg?t=1765387725" alt="">
+          <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/header.jpg?t=1765387725" alt="">
+        </div>
+      </div>
+      <div class="hero-copy">
+        <span class="eyebrow">Selección Arcade · Rockstar North</span>
+        <h1>Grand Theft<br>Auto V</h1>
+        <p>Tres vidas cruzadas en Los Santos. Recorre una ciudad abierta, cambia de personaje y prepara golpes a gran escala.</p>
+        <div class="hero-meta"><span class="tag">Acción</span><span class="tag">Mundo abierto</span><span class="tag">Un jugador</span></div>
+        <button class="primary-button" id="heroBuy">Ver ficha y requisitos <span aria-hidden="true">↗</span></button>
+      </div>
+      <div class="hero-art"><div class="hero-art-note"><strong>Grand Theft Auto V</strong>Capturas de Steam</div></div>
+    </section>
+    <section id="catalogo">
+      <div class="section-heading"><div><span class="eyebrow">Encuentra tu siguiente mundo</span><h2>Explora la tienda</h2><p>Grandes historias. Nuevas formas de jugar.</p></div><button class="text-action" id="wishlistView">♡ Mi lista</button></div>
+      <div class="toolbar">
+        <div class="search-wrap"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input class="search-input" id="searchInput" type="search" placeholder="Busca un juego, género o estudio" aria-label="Buscar juegos"></div>
+        <select class="sort-select" id="sortSelect" aria-label="Ordenar juegos"><option value="featured">Orden: destacados</option><option value="price-low">Precio: menor a mayor</option><option value="price-high">Precio: mayor a menor</option><option value="name">Nombre: A-Z</option></select>
+      </div>
+      <div class="genre-tabs" id="genreTabs" aria-label="Filtrar por género"></div>
+      <div class="catalog-layout">
+        <aside class="filter-rail" aria-label="Filtros de juegos">
+          <h3 class="filter-title">Descubrir</h3>
+          <button class="filter-option selected" data-collection="Todos"><span class="dot"></span>Todos los juegos</button>
+          <button class="filter-option" data-collection="Tendencia"><span class="dot"></span>En tendencia</button>
+          <button class="filter-option" data-collection="Ofertas"><span class="dot"></span>Ofertas</button>
+          <h3 class="filter-title" style="margin-top:26px">Tu biblioteca</h3>
+          <button class="filter-option" id="railWishlist"><span class="dot"></span>Lista de deseos</button>
+        </aside>
+        <div class="catalog"><div class="results-line"><span id="resultCount">0 juegos</span><span>Steam España · precios sujetos a cambios</span></div><div class="game-grid" id="gameGrid" aria-live="polite"></div></div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer"><strong>ARCADE</strong><span>Una tienda independiente para quienes viven jugando.</span><span>© 2026 Arcade</span></footer>
+  <div class="drawer-backdrop" id="backdrop"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Carrito de compra" aria-hidden="true">
+    <div class="drawer-head"><h2>Tu carrito <span id="cartTitleCount" style="color:var(--mint)"></span></h2><button class="close-button" id="closeCart" aria-label="Cerrar carrito">×</button></div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-summary" id="cartSummary"></div>
+  </aside>
+  <dialog class="game-dialog" id="gameDialog" aria-labelledby="detailTitle"></dialog>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+    <script src="ARCADE.js"></script>
+</body>
+</html>
