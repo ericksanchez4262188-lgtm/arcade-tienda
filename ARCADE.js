@@ -258,7 +258,7 @@ const steamPriceSnapshot = {
     async function loadSteamData(game, shouldRender = true) {
       if (game.steamData) return game.steamData;
       const fallbackData = {
-        short_description: `${game.title} es un juego de ${game.genre.toLocaleLowerCase("es")} desarrollado por ${game.studio}.`,
+        short_description: game.shortDescription || game.localDescription || `${game.title} es un juego de ${game.genre.toLocaleLowerCase("es")} desarrollado por ${game.studio}.`,
         developers: [game.studio],
         header_image: imageUrl(game),
         screenshots: [],
@@ -375,12 +375,12 @@ const steamPriceSnapshot = {
       gameDialog.innerHTML = `<div class="detail-head"><div><span class="eyebrow">${escapeHtml(game.genre)} · ${escapeHtml(game.studio)}</span><h2 id="detailTitle">${escapeHtml(game.title)}</h2></div><button class="close-button" data-close-details aria-label="Cerrar ficha">×</button></div><div class="detail-layout"><section class="detail-media ${game.noTrailer ? "images-only" : ""}" aria-label="Imágenes del juego"><img class="detail-main-image" id="detailImage" src="${game.gallery[0]}" alt="Captura de ${escapeHtml(game.title)}"><div class="gallery-strip">${game.gallery.map((image, index) => `<button class="gallery-thumb" data-gallery="${index}" aria-label="Ver captura ${index + 1}" aria-current="${index === 0}"><img src="${image}" alt=""></button>`).join("")}</div><p class="detail-description">${escapeHtml(description)}</p>${trailerMarkup}<a class="detail-source" href="${game.storeUrl}" target="_blank" rel="noreferrer">Ver ficha oficial y consultar precio ↗</a></section><section class="detail-specs"><p class="spec-intro">Requisitos publicados por Steam para PC/Windows. Las imágenes proceden de la ficha oficial del juego.</p>${requirementRows(minimum, "Requisitos mínimos")}${requirementRows(recommended, "Requisitos recomendados")}<p class="spec-intro">Precio consultado en Steam España: <strong>${game.price == null ? "No disponible" : game.price === 0 ? "Gratis" : money(game.price)}</strong>. Puede cambiar según la región o las ofertas vigentes.</p></section></div>`;
       if (game.trailer && !game.noTrailer) {
         const player = gameDialog.querySelector("video");
-        if (player.canPlayType("application/vnd.apple.mpegurl")) player.src = game.trailer;
-        else if (window.Hls && Hls.isSupported()) {
+        if (window.Hls && Hls.isSupported()) {
           activeHls = new Hls();
           activeHls.loadSource(game.trailer);
           activeHls.attachMedia(player);
-        } else gameDialog.querySelector("#trailerFallback").style.display = "inline-block";
+        } else if (player.canPlayType("application/vnd.apple.mpegurl")) player.src = game.trailer;
+        else gameDialog.querySelector("#trailerFallback").style.display = "inline-block";
       }
     }
     function stopTrailer() {
