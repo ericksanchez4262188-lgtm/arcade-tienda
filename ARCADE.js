@@ -254,6 +254,7 @@ const steamPriceSnapshot = {
       const content = rows.length ? `<dl class="requirements-list">${rows.map(([label, value]) => `<div class="requirement-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>` : `<p class="spec-intro">Requisitos técnicos no disponibles en esta ficha.</p>`;
       return `<section class="requirements-block"><h3>${escapeHtml(title)}</h3>${content}</section>`;
     }
+    let steamCatalogRequest;
     async function loadSteamData(game, shouldRender = true) {
       if (game.steamData) return game.steamData;
       const fallbackData = {
@@ -265,8 +266,15 @@ const steamPriceSnapshot = {
         movies: []
       };
       let data = fallbackData;
-      if (!location.hostname.endsWith(".github.io")) {
-        try {
+      try {
+        if (location.hostname.endsWith(".github.io")) {
+          steamCatalogRequest ||= fetch("ARCADE-data.json").then(response => {
+            if (!response.ok) throw new Error("No se pudo cargar el catálogo de Steam.");
+            return response.json();
+          });
+          const catalog = await steamCatalogRequest;
+          data = catalog[game.steamId] || fallbackData;
+        } else {
           const apiBase = location.protocol === "file:" ? "http://127.0.0.1:8765" : "";
           const response = await fetch(`${apiBase}/api/game?id=${encodeURIComponent(game.steamId)}`);
           if (!response.ok) throw new Error("No se pudo consultar Steam.");
@@ -274,9 +282,9 @@ const steamPriceSnapshot = {
           const entry = payload[game.steamId];
           if (!entry?.success || !entry.data) throw new Error("La ficha no está disponible en Steam.");
           data = entry.data;
-        } catch {
-          data = fallbackData;
         }
+      } catch {
+        data = fallbackData;
       }
       game.steamData = data;
       game.studio = (data.developers || [])[0] || game.studio;
