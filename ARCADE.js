@@ -199,7 +199,7 @@ const steamPriceSnapshot = {
       { id: "risk-of-rain-returns", steamId: "1337520", title: "Risk of Rain Returns", genre: "Roguelike", studio: "Hopoo Games" }
     ].map(game => ({ ...game, ...(steamPriceSnapshot[game.steamId] || {}), price: steamPriceSnapshot[game.steamId]?.price ?? game.price ?? null, oldPrice: steamPriceSnapshot[game.steamId]?.oldPrice ?? game.oldPrice ?? 0, discount: steamPriceSnapshot[game.steamId]?.discount ?? game.discount ?? 0, tags: game.tags || ["Tendencia"], storeUrl: `https://store.steampowered.com/app/${game.steamId}/?cc=es&l=spanish` }));
     const genres = ["Todos", ...new Set(games.map(game => game.genre))];
-    const imageUrl = (game) => game.steamData?.header_image || `https://cdn.akamai.steamstatic.com/steam/apps/${game.steamId}/header.jpg`;
+    const imageUrl = (game) => `imagenes/${game.steamId}-header.jpg`;
     const readStore = (key) => { try { return JSON.parse(localStorage.getItem(key) || "{}"); } catch { return {}; } };
     let cart = readStore("arcade-cart-v1");
     let wishlist = readStore("arcade-wishlist-v1");
@@ -256,13 +256,28 @@ const steamPriceSnapshot = {
     }
     async function loadSteamData(game, shouldRender = true) {
       if (game.steamData) return game.steamData;
-      const apiBase = location.protocol === "file:" ? "http://127.0.0.1:8765" : "";
-      const response = await fetch(`${apiBase}/api/game?id=${encodeURIComponent(game.steamId)}`);
-      if (!response.ok) throw new Error("No se pudo consultar Steam.");
-      const payload = await response.json();
-      const entry = payload[game.steamId];
-      if (!entry?.success || !entry.data) throw new Error("La ficha no está disponible en Steam.");
-      const data = entry.data;
+      const fallbackData = {
+        short_description: `${game.title} es un juego de ${game.genre.toLocaleLowerCase("es")} desarrollado por ${game.studio}.`,
+        developers: [game.studio],
+        header_image: imageUrl(game),
+        screenshots: [],
+        pc_requirements: {},
+        movies: []
+      };
+      let data = fallbackData;
+      if (!location.hostname.endsWith(".github.io")) {
+        try {
+          const apiBase = location.protocol === "file:" ? "http://127.0.0.1:8765" : "";
+          const response = await fetch(`${apiBase}/api/game?id=${encodeURIComponent(game.steamId)}`);
+          if (!response.ok) throw new Error("No se pudo consultar Steam.");
+          const payload = await response.json();
+          const entry = payload[game.steamId];
+          if (!entry?.success || !entry.data) throw new Error("La ficha no está disponible en Steam.");
+          data = entry.data;
+        } catch {
+          data = fallbackData;
+        }
+      }
       game.steamData = data;
       game.studio = (data.developers || [])[0] || game.studio;
       game.header = data.header_image || "";
@@ -487,7 +502,7 @@ const steamPriceSnapshot = {
       activeHeroSlide = (activeHeroSlide + 1) % heroImageSlides.length;
       heroImageSlides[activeHeroSlide].classList.add("active");
     }
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) window.setInterval(rotateHeroImages, 5000);
+    if (heroImageSlides.length > 1 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) window.setInterval(rotateHeroImages, 5000);
     document.getElementById("heroBuy").addEventListener("click", () => showGameDetails("gta-v"));
     document.getElementById("openCart").addEventListener("click", () => setCartOpen(true));
     document.getElementById("closeCart").addEventListener("click", () => setCartOpen(false));
